@@ -1,7 +1,7 @@
 import json
 import Service.BookService
 import Service.UserService
-from flask import Flask, jsonify
+from flask import Flask
 from flask import Response, request
 import Validators.UserSignupValidation
 
@@ -14,11 +14,18 @@ app = Flask(__name__)
 def user_signup():
     validation_result= Validators.UserSignupValidation.schema.validate(request.json)
     if validation_result.get('success',False) is False:
-        return jsonify({
-            "Status": "Error",
-            "Error": validation_result.get("error")
 
-        })
+
+        return Response(
+            response=json.dumps(
+                {"Error": validation_result.get("error")
+                 }
+            ),
+            status=400,
+            mimetype='application/json'
+        )
+
+
     try:
         userDetails = request.get_json()
         dbResponse = Service.UserService.user_signup(userDetails)
@@ -119,7 +126,7 @@ def update_book_info(id):
              response=json.dumps(
                  {"message": "Sorry ! :( can not update "}
              ),
-             status=500,
+             status=404,
              mimetype='application/json'
          )
 @app.route('/admin/<id>', methods=['DELETE'])
@@ -139,7 +146,7 @@ def delete_book_info(id):
                 response=json.dumps(
                     {"message": " OOpsS!! Book not found anymore! ", "id": f"{id}"}
                 ),
-                status=200,
+                status=404,
                 mimetype='application/json'
             )
 
@@ -157,7 +164,21 @@ def delete_book_info(id):
         )
 
 
-
+@app.route('/book/search', methods=['POST'])
+def delete_book_info_one():
+    try:
+        dbResponse = Service.BookService.boi_khojo(request.json)
+        return Response(
+            response=json.dumps(
+                {
+                 "User": f"{dbResponse}"
+                 }
+            ),
+            status=201,
+            mimetype='application/json'
+        )
+    except:
+        print("Failed")
 
 
 

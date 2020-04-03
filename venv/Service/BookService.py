@@ -54,3 +54,15 @@ def delete_book_info(id):
         print(ex)
         print("#######")
 
+####################
+
+def boi_khojo(Object):
+    try:
+
+        regex_query = {"Bookname": {"$regex": Object.get('Bookname')}}
+        dbResponse = list(Properties.DbConfiguration.db.books.find(regex_query))
+
+        return dbResponse
+    except:
+        print("Failed")
+
