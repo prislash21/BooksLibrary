@@ -8,3 +8,13 @@ schema=Kanpai.Object({
 
 })
 
+def email_validation(emaildao):
+    try :
+
+        dbResponse = Properties.DbConfiguration.db.users.find(emaildao)
+        if (dbResponse.)
+            list.__sizeof__(dbResponse)
+    except Exception as ex:
+        print("*********************")
+        print(ex)
+        print("************************")

@@ -1,21 +1,18 @@
 import json
+
 import Service.BookService
 import Service.UserService
+import Validators.UserSignupValidation
 from flask import Flask
 from flask import Response, request
-import Validators.UserSignupValidation
-
-
 
 app = Flask(__name__)
 
 
 @app.route('/user/signUp', methods=['POST'])
 def user_signup():
-    validation_result= Validators.UserSignupValidation.schema.validate(request.json)
-    if validation_result.get('success',False) is False:
-
-
+    validation_result = Validators.UserSignupValidation.schema.validate(request.json)
+    if validation_result.get('success', False) is False:
         return Response(
             response=json.dumps(
                 {"Error": validation_result.get("error")
@@ -25,11 +22,9 @@ def user_signup():
             mimetype='application/json'
         )
 
-
     try:
         userDetails = request.get_json()
         dbResponse = Service.UserService.user_signup(userDetails)
-
 
         return Response(
             response=json.dumps(
@@ -40,7 +35,7 @@ def user_signup():
             status=201,
             mimetype='application/json'
         )
-# For catching exception
+    # For catching exception
     except Exception as ex:
         print('*********************')
 
@@ -48,8 +43,7 @@ def user_signup():
         print('********************')
 
 
-
-@app.route('/admin/createBook', methods= ['POST'])
+@app.route('/admin/createBook', methods=['POST'])
 def create_book():
     try:
         bookDetails = request.get_json()
@@ -70,77 +64,79 @@ def create_book():
         print(ex)
         print('********************')
 
+
 @app.route('/user/BookList', methods=['GET'])
 def see_book_list():
-     try:
-         booklist= Service.BookService.see_book_list()
-
-         return Response(
-             response=json.dumps(booklist),
-             status=200,
-             mimetype='application/json'
-         )
-
-
-
-     except Exception as ex:
-         print(ex)
-         return Response(
-             response=json.dumps(
-                 {"message": "Booklist is not showing"}
-             ),
-             status=500,
-             mimetype='application/json'
-         )
-
-@app.route('/admin/<id>', methods=['PATCH'])
-def update_book_info(id):
-
-     try:
-         dbResponse = Service.BookService.update_book_info(id,request.json)
-
-
-         if dbResponse.modified_count ==1:
-           return Response(
-             response=json.dumps(
-                 {"message": "updated Successfully! :) "}
-             ),
-             status=200,
-             mimetype='application/json'
-         )
-         else:
-             return Response(
-                 response=json.dumps(
-                     {"message": "nothing to update.... :) "}
-                 ),
-                 status=200,
-                 mimetype='application/json'
-             )
-
-
-     except Exception as ex:
-         print("**********")
-         print(ex)
-         print("***********")
-         return Response(
-             response=json.dumps(
-                 {"message": "Sorry ! :( can not update "}
-             ),
-             status=404,
-             mimetype='application/json'
-         )
-@app.route('/admin/<id>', methods=['DELETE'])
-def delete_book_info(id):
     try:
-        dbResponse= Service.BookService.delete_book_info(id)
-        if dbResponse.deleted_count == 1:
-            return Response(
-            response=json.dumps(
-                {"message": " Book information Deleted Successfully ! ","id": f"{id}"}
-            ),
+        booklist = Service.BookService.see_book_list()
+
+        return Response(
+            response=json.dumps(booklist),
             status=200,
             mimetype='application/json'
         )
+
+
+
+    except Exception as ex:
+        print(ex)
+        return Response(
+            response=json.dumps(
+                {"message": "Booklist is not showing"}
+            ),
+            status=500,
+            mimetype='application/json'
+        )
+
+
+@app.route('/admin/<id>', methods=['PATCH'])
+def update_book_info(id):
+    try:
+        dbResponse = Service.BookService.update_book_info(id, request.json)
+
+        if dbResponse.modified_count == 1:
+            return Response(
+                response=json.dumps(
+                    {"message": "updated Successfully! :) "}
+                ),
+                status=200,
+                mimetype='application/json'
+            )
+        else:
+            return Response(
+                response=json.dumps(
+                    {"message": "nothing to update.... :) "}
+                ),
+                status=200,
+                mimetype='application/json'
+            )
+
+
+    except Exception as ex:
+        print("**********")
+        print(ex)
+        print("***********")
+        return Response(
+            response=json.dumps(
+                {"message": "Sorry ! :( can not update "}
+            ),
+            status=404,
+            mimetype='application/json'
+        )
+
+
+@app.route('/admin/<id>', methods=['DELETE'])
+def delete_book_info(id):
+    try:
+        dbResponse = Service.BookService.delete_book_info(id)
+        if dbResponse.deleted_count == 1:
+            return Response(
+                response=json.dumps(
+                    {"message": " Book information Deleted Successfully ! ", "id": f"{id}"}
+                ),
+                status=200,
+                mimetype='application/json'
+            )
         else:
             return Response(
                 response=json.dumps(
@@ -171,21 +167,14 @@ def delete_book_info_one():
         return Response(
             response=json.dumps(
                 {
-                 "User": f"{dbResponse}"
-                 }
+                    "User": f"{dbResponse}"
+                }
             ),
             status=201,
             mimetype='application/json'
         )
     except:
         print("Failed")
-
-
-
-
-
-
-
 
 
 if __name__ == "__main__":
