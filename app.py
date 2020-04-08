@@ -51,15 +51,24 @@ def user_signup():
     try:
         userDetails = request.get_json()
         dbResponse = userSignUp(userDetails)
-
-        return Response(
-            response=json.dumps(
-                {"user": "User created Successfully"
-                 }
-            ),
-            status=201,
-            mimetype='application/json'
-        )
+        if dbResponse == "exists":
+            return Response(
+                response=json.dumps(
+                    {"user": "User already exists with provided email Id"
+                     }
+                ),
+                status=409,
+                mimetype='application/json'
+            )
+        else:
+            return Response(
+                response=json.dumps(
+                    {"user": "User created Successfully"
+                     }
+                ),
+                status=201,
+                mimetype='application/json'
+            )
     # For catching exception
     except Exception as ex:
         print('*********************')
@@ -329,18 +338,21 @@ def userSignUp(Object):
         roles = Object['roles']
         password = Object['password']
         created = datetime.utcnow()
-
-        userId = db.users.insert_one({
-            'firstName': firstName,
-            'lastName': lastName,
-            'email': email,
-            'roles': roles,
-            'password_hash': pwd_context.encrypt(password),
-            'createdAt': created,
-        })
-        result = {'userId': userId}
-        return result;
-
+        dbResponse = db.users.find_one({'email': email})
+        result = "exists"
+        if dbResponse == None:
+            userId = db.users.insert_one({
+                'firstName': firstName,
+                'lastName': lastName,
+                'email': email,
+                'roles': roles,
+                'password_hash': pwd_context.encrypt(password),
+                'createdAt': created,
+            })
+            result = userId
+            return result;
+        else:
+            return result;
     except Exception as ex:
         print('*********************')
 
@@ -358,7 +370,7 @@ def createBook(object):
         return dbResponse
 
     except Exception as ex:
-        print("**********")
+        print("88888")
         print(ex)
 
 
@@ -373,7 +385,7 @@ def seeBookList():
 
 
     except Exception as ex:
-        print("******")
+        print("88888")
         print(ex)
 
 
