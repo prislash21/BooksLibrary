@@ -1,9 +1,6 @@
 import json
 from datetime import datetime
-from datetime import datetime
-
 import pymongo
-from bson.objectid import ObjectId
 from bson.objectid import ObjectId
 from flask import Flask
 from flask import Response, request
@@ -17,17 +14,18 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'Th1s1ss3cr3t'
 jwt = JWTManager(app)
 
+
 # Database Configuration ###
 try:
     mongo = pymongo.MongoClient(
         host="localhost",
         port=27017,
-        serverSelectionTimeoutMS=1000
+        serverSelectionTimeoutMS=40000
     )
     db = mongo.bookslibrary
     mongo.server_info()
-except:
-    print("cannot connect to DB")
+except Exception as ex:
+    print(ex)
 
 
 ########################################
@@ -86,7 +84,7 @@ def user_signIn():
         if dbResponse.__eq__("Error"):
             return Response(
                 response=json.dumps(
-                    {"Error": "Faild"
+                    {"Error": "Failed"
                      }
                 ),
                 status=400,
@@ -115,7 +113,7 @@ def user_signIn():
 @app.route('/book/createBook', methods=['POST'])
 @jwt_required
 def create_book():
-    # Get user and his role from token and check he is authorize to do this action or not
+    # Get user and his role from token and check  if he is authorized to do this action or not
     current_user = get_jwt_identity()
     userRoles = current_user['roles']
     if userRoles == "ADMIN":
@@ -350,9 +348,9 @@ def userSignUp(Object):
                 'createdAt': created,
             })
             result = userId
-            return result;
+            return result
         else:
-            return result;
+            return result
     except Exception as ex:
         print('*********************')
 
