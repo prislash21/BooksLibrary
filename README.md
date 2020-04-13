@@ -26,7 +26,7 @@ ___
       you can run this command from your command prompt or you can do it Pycharm file settings and 
       install those packages .
  ___
-     `app.py`
+     ~app.py~
      before run this file , connect to the mongoDB .
      
 >###### you can have the full API collection with the details in this link below :
